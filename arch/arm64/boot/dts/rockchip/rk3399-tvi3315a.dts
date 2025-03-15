@@ -3,7 +3,7 @@
 
 #include <dt-bindings/pwm/pwm.h>
 #include <dt-bindings/input/input.h>
-#include "rk3399.dtsi"
+#include "rk3399-op1.dtsi"
 
 / {
 	model = "TVI3315A RK3399 Board";
@@ -83,18 +83,40 @@
 		reset-gpios = <&gpio0 RK_PB2 GPIO_ACTIVE_LOW>; // bsp
 	};
 
-	vcc3v3_pcie: vcc3v3-pcie-regulator {
+	vcc12v_dcin: regulator-vcc12v-dcin {
 		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio2 RK_PA2 GPIO_ACTIVE_HIGH>; // bsp 66
-		pinctrl-names = "default";
-		pinctrl-0 = <&pcie_drv>;
-		regulator-name = "vcc3v3_pcie";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
+		regulator-name = "vcc12v_dcin";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
 	};
 
-	vcc3v3_sys: vcc3v3-sys { // bsp
+	vcc12v0: regulator-vcc12v0 {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio1 RK_PC7 GPIO_ACTIVE_HIGH>; // bsp 55
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc12v0_en>;
+		regulator-name = "vcc12v0";
+		regulator-min-microvolt = <12000000>;
+		regulator-max-microvolt = <12000000>;
+		regulator-always-on;
+		regulator-boot-on;
+		vin-supply = <&vcc12v_dcin>;
+	};
+
+	vcc5v0_sys: regulator-vcc5v0-sys {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_sys";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <5000000>; // bsp 3900000
+		regulator-max-microvolt = <5000000>; // bsp 3900000
+		vin-supply = <&vcc12v_dcin>;
+	};
+
+	vcc3v3_sys: regulator-vcc3v3-sys { // bsp
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_sys";
 		regulator-always-on;
@@ -104,7 +126,19 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
-	vcc5v0_host: vcc5v0-host-regulator {
+	vcc3v3_pcie: regulator-vcc3v3-pcie {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio2 RK_PA2 GPIO_ACTIVE_HIGH>; // bsp 66
+		pinctrl-names = "default";
+		pinctrl-0 = <&pcie_drv>;
+		regulator-name = "vcc3v3_pcie";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&vcc5v0_sys>;
+	};
+
+	vcc5v0_host: regulator-vcc5v0-host {
 		compatible = "regulator-fixed";
 		gpio = <&gpio2 RK_PB4 GPIO_ACTIVE_LOW>; // bsp 76
 		pinctrl-names = "default";
@@ -113,7 +147,7 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
-	vcc5v0_otg: vcc5v0-otg-regulator {
+	vcc5v0_otg: regulator-vcc5v0-otg {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio4 RK_PD2 GPIO_ACTIVE_HIGH>; // bsp 154
@@ -124,7 +158,7 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
-	vcc5v0: vcc5v0-regulator {
+	vcc5v0: regulator-vcc5v0 {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio0 RK_PB4 GPIO_ACTIVE_HIGH>; // bsp 12
@@ -132,33 +166,13 @@
 		pinctrl-0 = <&vcc5v0_en>;
 		regulator-name = "vcc5v0";
 		regulator-always-on;
-	};
-
-	vcc12v0: vcc12v0-regulator {
-		compatible = "regulator-fixed";
-		enable-active-high;
-		gpio = <&gpio1 RK_PC7 GPIO_ACTIVE_HIGH>; // bsp 55
-		pinctrl-names = "default";
-		pinctrl-0 = <&vcc12v0_en>;
-		regulator-name = "vcc12v0";
-		regulator-min-microvolt = <12000000>;
-		regulator-max-microvolt = <12000000>;
-		regulator-always-on;
-	};
-
-	vcc_sys: vcc5v0_sys: vcc5v0-sys {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc5v0_sys";
-		regulator-always-on;
-		regulator-boot-on;
-		regulator-min-microvolt = <5000000>; // bsp 3900000
-		regulator-max-microvolt = <5000000>; // bsp 3900000
+		vin-supply = <&vcc5v0_sys>;
 	};
 
 	vdd_log: vdd-log { // bsp
 		compatible = "pwm-regulator";
 		pwms = <&pwm2 0 25000 1>;
-		pwm-supply = <&vcc_sys>;
+		pwm-supply = <&vcc5v0_sys>;
 		regulator-name = "vdd_log";
 		regulator-always-on;
 		regulator-boot-on;
@@ -171,6 +185,9 @@
 		regulator-name = "vcc_phy";
 		regulator-always-on;
 		regulator-boot-on;
+		regulator-min-microvolt = <800000>;
+		regulator-max-microvolt = <1400000>;
+		vin-supply = <&vcc3v3_sys>;
 	};
 
 	leds {
@@ -296,7 +313,7 @@
 	pinctrl-0 = <&rgmii_pins>;
 	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>; // bsp
 	snps,reset-active-low;
-	snps,reset-delays-us = <0 10000 50000>;
+	snps,reset-delays-us = <0 20000 100000>;
 	tx_delay = <0x2a>;
 	rx_delay = <0x21>;
 	status = "okay";
@@ -517,7 +534,7 @@
 		regulator-ramp-delay = <1000>;
 		regulator-always-on;
 		regulator-boot-on;
-		vin-supply = <&vcc_sys>;
+		vin-supply = <&vcc5v0_sys>;
 
 		regulator-state-mem {
 			regulator-off-in-suspend;
@@ -536,7 +553,7 @@
 		regulator-ramp-delay = <1000>;
 		regulator-always-on;
 		regulator-boot-on;
-		vin-supply = <&vcc_sys>;
+		vin-supply = <&vcc5v0_sys>;
 
 		regulator-state-mem {
 			regulator-off-in-suspend;
@@ -617,7 +634,11 @@
 
 // USIM_RST <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>; // bsp 42
 &pcie0 {
+	ep-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;
+	num-lanes = <4>;
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie_usim_rst>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
 };
 
@@ -706,6 +727,7 @@
 		vcc5v0_en: vcc5v0-en {
 			rockchip,pins = <0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>; // bsp
 		};
+
 		vcc12v0_en: vcc12v0-en {
 			rockchip,pins = <1 RK_PC7 RK_FUNC_GPIO &pcfg_pull_none>; // bsp
 		};
@@ -747,8 +769,9 @@
 
 &sdhci {
 	bus-width = <8>;
-	mmc-hs400-1_8v;
-	mmc-hs400-enhanced-strobe;
+	mmc-hs200-1_8v;
+	//mmc-hs400-1_8v;
+	//mmc-hs400-enhanced-strobe;
 	keep-power-in-suspend;
 	non-removable;
 	status = "okay";
