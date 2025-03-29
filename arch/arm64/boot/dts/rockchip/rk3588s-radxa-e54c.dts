@@ -107,10 +107,7 @@
 		gpio = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&vbus_typec0_en>;
-		regulator-allow-set-load;
 		regulator-name = "vbus-typec0";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <20000000>;
 	};
 
 	/*
