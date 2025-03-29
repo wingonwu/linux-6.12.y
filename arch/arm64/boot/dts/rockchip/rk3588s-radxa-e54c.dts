@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
  * Copyright (c) 2024 Radxa Computer (Shenzhen) Co., Ltd.
+ * Copyright (c) 2025 flippy (flippy@sina.com)
  */
 
 /dts-v1/;
@@ -97,15 +98,19 @@
 
 	/* The alternative power
 	 * output mode: FPF2595UCX advanced load−management switch, Max 28v 3.9A, vcc_sysin -> vbus_typec0 5v
+	 *   enabled by GPIO3_C0
 	 * input mode: FUSB302B Programmable USB Type‐C Controller, vbus_typec0 -> vcc_sysin, 5v - 20v
 	 */
 	vbus_typec0: regulator-vbus-typec0 {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		regulator-name = "vbus-typec0";
 		gpio = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&vbus_typec0_en>;
+		regulator-allow-set-load;
+		regulator-name = "vbus-typec0";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <20000000>;
 	};
 
 	/*
@@ -249,7 +254,9 @@
 
 	/*
 	 * Power switch: SY6280AAC, max 2A output
+	 * input: vcc_sysin
 	 * output to two usb2.0 type A port
+	 * enabled by GPIO4_B5
 	 */
 	vcc5v0_usb_hub: regulator-vcc5v0-usb-hub {
 		compatible = "regulator-fixed";
@@ -265,7 +272,9 @@
 
 	/*
 	 * Power switch: SY6280AAC, max 2A output
+	 * input: vcc_sysin
 	 * output to USB3 type A port
+	 * enabled by GPIO0_D4
 	 */
 	vcc5v0_usb3_host: regulator-vcc5v0-usb3-host {
 		compatible = "regulator-fixed";
@@ -558,6 +567,26 @@
 	};
 };
 
+/*
+ * DIP14 output
+ * pin11: I2C6_SCL_M0
+ * pin13: I2C6_SDA_M0
+ */
+&i2c6 {
+	pinctrl-0 = <&i2c6m0_xfer>;
+	status = "okay";
+};
+
+/*
+ * DIP14 output
+ * pin3: I2C7_SDA_M3
+ * pin5: I2C7_SCL_M3
+ */
+&i2c7 {
+	pinctrl-0 = <&i2c7m3_xfer>;
+	status = "okay";
+};
+
 &package_thermal {
 	polling-delay = <1000>;
 
@@ -759,6 +788,18 @@
 		spi-rx-bus-width = <4>;
 		spi-tx-bus-width = <1>;
 	};
+};
+
+/*
+ * DIP14 output
+ * pin8:  SPI0_MOSI_M2
+ * pin10: SPI0_MISO_M2
+ * pin12: SPI0_CLK_M2
+ * pin14: SPI0_CS0_M2
+ */
+&spi0 {
+	pinctrl-0 = <&spi0m2_cs0 &spi0m2_pins>;
+	status = "okay";
 };
 
 &spi2 {
@@ -1114,6 +1155,16 @@
 
 &uart2 {
 	pinctrl-0 = <&uart2m0_xfer>;
+	status = "okay";
+};
+
+/*
+ * DIP14 output
+ * pin7: UART8_TX_M0
+ * pin9: UART8_RX_M0
+ */
+&uart8 {
+	pinctrl-0 = <&uart8m0_xfer>;
 	status = "okay";
 };
 
