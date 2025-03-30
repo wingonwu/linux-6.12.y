@@ -324,6 +324,7 @@
 	status = "okay";
 };
 
+/* usb_host2_xhci: usb@fcd00000 phy */
 &combphy2_psu {
 	status = "okay";
 };
@@ -657,12 +658,6 @@
 };
 
 &pinctrl {
-	fusb302 {
-		fusb302_int_l: fusb302-int-l {
-			rockchip,pins = <1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
 	keys {
 		user_key: user-key {
 			rockchip,pins = <0 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>;
@@ -692,6 +687,10 @@
 	};
 
 	usb {
+		fusb302_int_l: fusb302-int-l {
+			rockchip,pins = <1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
 		vbus_typec0_en: vbus-typec0-en {
 			rockchip,pins = <3 RK_PC0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
@@ -702,10 +701,6 @@
 
 		vcc5v0_usb3_host_en: vcc5v0-usb3-host-en {
 			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		usbc0_int: usbc0-int {
-			rockchip,pins = <1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 };
@@ -1128,6 +1123,7 @@
 	status = "okay";
 };
 
+/* TYPE-C otg phy */
 &u2phy0_otg {
 	status = "okay";
 };
@@ -1136,6 +1132,7 @@
 	status = "okay";
 };
 
+/* To USB2.0 HUB */
 &u2phy2_host {
 	phy-supply = <&vcc5v0_usb_hub>;
 	status = "okay";
@@ -1145,6 +1142,7 @@
 	status = "okay";
 };
 
+/* To USB3.0 Type-A receptacle */
 &u2phy3_host {
 	phy-supply = <&vcc5v0_usb3_host>;
 	status = "okay";
@@ -1165,6 +1163,7 @@
 	status = "okay";
 };
 
+/* typec0 usb/dp altmode mux phy */
 &usbdp_phy0 {
 	mode-switch;
 	orientation-switch;
@@ -1195,6 +1194,7 @@
 	status = "okay";
 };
 
+/* typec0 */
 &usb_host0_xhci {
 	dr_mode = "otg";
 	usb-role-switch;
@@ -1219,6 +1219,7 @@
 	status = "okay";
 };
 
+/* To USB3.0 Type-A receptacle */
 &usb_host2_xhci {
 	status = "okay";
 };
